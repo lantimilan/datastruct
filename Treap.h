@@ -13,13 +13,14 @@ public:
     bool insert(T val);
     bool erase(T val);
     void print();
+    bool validate();  // check key property and priority property
 };
 
 template<class T>
 class TreapNode {
     T key;
     int priority;
-    TreapNode<T> *left, *right;
+    TreapNode<T> *left, *right, *parent;
 public:
     TreapNode(T val, int prio) : key(val), priority(prio), left(0), right(0)
         {}
@@ -50,6 +51,12 @@ bool Treap<T>::insert(T val) {
         prev->left = node;
     }
     // rotate up to fix priority
+    if (prev->priority < node->priority) {
+        // done
+    } else {
+        // 1. grandparent is null or grandparent has smaller priority
+        // 2. grandparent is not null and grandparent has larger priority
+    }
 }
 
 template<class T>
