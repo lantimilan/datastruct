@@ -1,5 +1,8 @@
 // Treap.h
 #include <iostream>
+#include <string>
+
+int N = 100;
 
 template<class T>
 class TreapNode;
@@ -22,9 +25,9 @@ class TreapNode {
     int priority;
     TreapNode<T> *left, *right, *parent;
 public:
-    TreapNode(T val, int prio) : key(val), priority(prio), left(0), right(0)
-        {}
-    void print();
+    TreapNode(T val, int prio) : key(val), priority(prio), left(0),
+        right(0), parent(0) {}
+    void print(int level);  // level of indentation
     friend class Treap<T>;
 };
 
@@ -50,12 +53,43 @@ bool Treap<T>::insert(T val) {
     } else {
         prev->left = node;
     }
+    node->parent = prev;
     // rotate up to fix priority
-    if (prev->priority < node->priority) {
-        // done
-    } else {
-        // 1. grandparent is null or grandparent has smaller priority
-        // 2. grandparent is not null and grandparent has larger priority
+    while (node->parent != 0 && node->priority < node->parent->priority) {
+        TreapNode<T>* parent = node->parent;
+        if (parent->parent) {
+            if (parent == parent->parent->left) {
+                parent->parent->left = node;
+            } else {
+                parent->parent->right = node;
+            }
+        }
+        node->parent = parent->parent;
+        parent->parent = node;
+        if (node == parent->left) {
+            TreapNode<T>* rchild = node->right;
+            parent->left = rchild;
+            if (rchild) {
+                rchild->parent = parent;
+            }
+            node->right = parent;
+        } else {
+            TreapNode<T>* lchild = node->left;
+            parent->right = lchild;
+            if (lchild) {
+                lchild->parent = parent;
+            }
+            node->left = parent;
+        }
+        /*
+        std::cout << std::endl;
+        std::cout << "temp\n";
+        print();
+        std::cout << std::endl;
+        */
+    }
+    if (node->parent == 0) {
+        root = node;
     }
 }
 
@@ -66,25 +100,29 @@ bool Treap<T>::erase(T val) {
 
 template<class T>
 void Treap<T>::print() {
-    root->print();
+    root->print(0);
 }
 
 template<class T>
-void TreapNode<T>::print() {
+void TreapNode<T>::print(int level) {
+    std::string prefix = std::string(level*4, ' ');
+    std::string nextPrefix = std::string((level+1)*4, ' ');
+    std::cout << prefix;
     std::cout << "(" << key << "," << priority << ")" << std::endl;
     if (left) {
-        left->print();
+        left->print(level+1);
     } else {
-        std::cout << "null" << std::endl;
+        std::cout << nextPrefix << "null" << std::endl;
     }
     if (right) {
-        right->print();
+        right->print(level+1);
     } else {
-        std::cout << "null" << std::endl;
+        std::cout << nextPrefix << "null" << std::endl;
     }
 }
 
 template<class T>
 int Treap<T>::getPriority() {
-    return 100;
+    return N--;
+    //return 100;
 }
