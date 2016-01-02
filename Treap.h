@@ -13,6 +13,7 @@ class Treap {
     int getPriority();
 public:
     Treap() : root(0) {}
+    TreapNode<T>* lookup(T val);
     bool insert(T val);
     bool erase(T val);
     void print();
@@ -23,13 +24,31 @@ template<class T>
 class TreapNode {
     T key;
     int priority;
+    int size;
     TreapNode<T> *left, *right, *parent;
+
+    void unlinkParent(TreapNode<T> *child);
 public:
     TreapNode(T val, int prio) : key(val), priority(prio), left(0),
         right(0), parent(0) {}
     void print(int level);  // level of indentation
     friend class Treap<T>;
 };
+
+template<class T>
+TreapNode<T>* Treap<T>::lookup(T val) {
+    TreapNode<T> *target = root;
+    while (target) {
+        if (target->key == val) {
+            break;
+        } else if (target->key < val) {
+            target = target->right;
+        } else {
+            target = target->left;
+        }
+    }
+    return target;
+}
 
 template<class T>
 bool Treap<T>::insert(T val) {
@@ -95,6 +114,18 @@ bool Treap<T>::insert(T val) {
 
 template<class T>
 bool Treap<T>::erase(T val) {
+    TreapNode<T> *node = lookup(val);
+    if (node == 0) {
+        return false;
+    }
+    if (node->left == 0 || node->right == 0) {
+        TreapNode<T> *child = (node->left) ? node->left : node->right;
+        node->unlinkParent(child);
+    } else {
+        // both children present, find next in sequence and fix heap order
+    }
+    delete node;
+    node = 0;
     return true;
 }
 
@@ -125,4 +156,17 @@ template<class T>
 int Treap<T>::getPriority() {
     return N--;
     //return 100;
+}
+
+////////////////////////////////////////////////
+// TreapNode methods
+template<class T>
+void TreapNode<T>::unlinkParent(TreapNode<T> *child) {
+    if (parent) {
+        if (this == parent->left) {
+            parent->left = child;
+        } else {
+            parent->right = child;
+        }
+    }
 }
