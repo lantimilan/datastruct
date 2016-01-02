@@ -16,11 +16,9 @@ right subtree. And we apply induction hypothesis on them to complete the proof.
 Operations:
 1. insert(int val)
 First we do normal BST insertion to find the parent that will have newnode as
-its child. Now we have three cases:
-1.1 newnode.priority > parent.priority. We are done.
-1.2 newnode.priority < parent.priority
-1.2.1 newnode.priority < grandparent.priority, right rotation, and recurse.
-1.2.2 newnode.priority > grandparent.priority, left rotation, and done.
+its child. Then we recusively rotate newnode upwards until it is either at the
+root, or it has a parent with a lower priority. Notice that we need to fix
+links of parent, grandparent and its left or right subtree while rotating up.
 
 Because of property 1, we know that as long as the final treap is a valid treap,
 we have constructed the only treap that is valid. In other words, there is no
